@@ -1,4 +1,19 @@
-// EDIT THIS FILE TO COMPLETE ASSIGNMENT QUESTION 1
+/**
+ * Approach:
+ *
+ * Unix timestamps are used for sort comparison rather than the human-readable
+ * datetime string — larger numbers mean more recent articles, making comparisons
+ * simple and reliable without any date parsing.
+ *
+ * An accessibility audit was added as a creative extension because accessibility
+ * shouldn't be an afterthought. Users deserve equal access to content, and that
+ * requires inclusionary measures built into the application from the start.
+ *
+ * Each concern lives in its own function — collection, validation, auditing, and
+ * reporting are all separate. Code should be easy to read and easy to follow.
+ * Complexity should be justified, not assumed.
+ */
+
 // Setup: cd qa_wolf_take_home && npm install  (downloads Chromium via postinstall)
 const { chromium } = require("playwright");
 const { AxeBuilder } = require('@axe-core/playwright');
@@ -24,7 +39,7 @@ async function accessibilityAudit(page) {
   return results.violations;
 }
 
-function printReport(articles, failures, violations) {
+function printReport(articles, failures, violations, startTime) {
   console.log('\n─────────────────────────────────────────────');
   console.log('  QA Wolf — Hacker News Validator');
   console.log('─────────────────────────────────────────────\n');
@@ -59,6 +74,7 @@ function printReport(articles, failures, violations) {
   console.log(`  Articles checked:  ${articles.length}`);
   console.log(`  Sort order:        ${failures.length === 0 ? 'PASS ✓' : 'FAIL ✗'}`);
   console.log(`  A11y violations:   ${violations.length}`);
+  console.log(`  Time taken:        ${Math.round((Date.now() - startTime) / 1000)}s`);
   console.log('─────────────────────────────────────────────\n');
 }
 
@@ -98,6 +114,7 @@ async function launchBrowser() {
 }
 
 async function sortHackerNewsArticles() {
+  const startTime = Date.now();
   const browser = await launchBrowser();
   const context = await browser.newContext();
   const page = await context.newPage();
@@ -138,7 +155,7 @@ async function sortHackerNewsArticles() {
   const failures = validateOrder(articles);
   const violations = await accessibilityAudit(page);
 
-  printReport(articles, failures, violations);
+  printReport(articles, failures, violations, startTime);
 
   await browser.close();
 }
