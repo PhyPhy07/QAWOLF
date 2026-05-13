@@ -23,7 +23,16 @@ async function accessibilityAudit(page) {
   return results.violations;
 }
 
-/** Prefer installed Chrome (matches CPU arch on Apple Silicon); fallback to bundled Chromium. */
+function printReport(articles, failures, violations) {
+  console.log('\n─────────────────────────────────────────────');
+  console.log('  QA Wolf — Hacker News Validator');
+  console.log('─────────────────────────────────────────────\n');
+
+  console.log('  COLLECTION');
+  console.log(`  ✓ ${articles.length} articles collected\n`);
+}
+
+/** Prefer installed Chrome (correct arch on Apple Silicon); fallback to bundled Chromium. */
 async function launchBrowser() {
   const opts = { headless: false };
   try {
@@ -39,7 +48,7 @@ async function sortHackerNewsArticles() {
   const page = await context.newPage();
 
   await page.goto("https://news.ycombinator.com/newest");
-  
+
   const articles = [];
 
   while (articles.length < 100) {
@@ -71,28 +80,10 @@ async function sortHackerNewsArticles() {
     }
   }
 
-  console.log(`collected ${articles.length} articles`);
-  console.log(articles[0]);
-  console.log(articles[99]);
-
   const failures = validateOrder(articles);
-
-  if (failures.length === 0) {
-    console.log('PASS — all 100 articles are sorted newest to oldest');
-  } else {
-    console.log(`FAIL — ${failures.length} articles out of order`);
-    for (const f of failures) {
-      console.log(`  #${f.index + 1}: ${f.article.title} — ${f.article.datetime}`);
-      console.log(`  #${f.index + 2}: ${f.nextArticle.title} — ${f.nextArticle.datetime}`);
-    }
-  }
-
   const violations = await accessibilityAudit(page);
 
-  console.log(`\nAccessibility audit — ${violations.length} violations found`);
-  for (const v of violations) {
-    console.log(`  [${v.impact}] ${v.id} — ${v.nodes.length} element(s)`);
-  }
+  printReport(articles, failures, violations);
 
   await browser.close();
 }
