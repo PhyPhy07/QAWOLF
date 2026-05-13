@@ -23,8 +23,18 @@ async function accessibilityAudit(page) {
   return results.violations;
 }
 
+/** Prefer installed Chrome (matches CPU arch on Apple Silicon); fallback to bundled Chromium. */
+async function launchBrowser() {
+  const opts = { headless: false };
+  try {
+    return await chromium.launch({ ...opts, channel: "chrome" });
+  } catch {
+    return await chromium.launch(opts);
+  }
+}
+
 async function sortHackerNewsArticles() {
-  const browser = await chromium.launch({ headless: false });
+  const browser = await launchBrowser();
   const context = await browser.newContext();
   const page = await context.newPage();
 
