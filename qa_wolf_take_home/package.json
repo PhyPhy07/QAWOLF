@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "install:browsers": "playwright install chromium",
+    "postinstall": "playwright install chromium",
     "start": "node index.js",
     "present": "HEADLESS=1 node index.js"
   },
