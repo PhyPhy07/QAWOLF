@@ -57,3 +57,25 @@ While the assignment has clear requirements, we encourage applicants to treat it
 There's no "right" answer—we're curious to see what you choose to do when given freedom and ambiguity. In a world where tools can help generate working code quickly and make it easier than ever to complete technical take-homes, we value originality and intentionality. If that resonates with you, use this assignment as a chance to show us how you think.
 
 Applicants who approach the assignment as a creative challenge, not just a checklist, tend to perform best in our process.
+
+### What this script does
+
+1. Launches a **real browser** under Playwright: it tries **Google Chrome** (`channel: "chrome"`) if installed, otherwise **Playwright’s bundled Chromium** (“Chrome for Testing”). Then it opens [Hacker News /newest](https://news.ycombinator.com/newest).
+2. Paginates with the **More** link until **100** articles are collected (trimming with `splice` if a page returns more than needed).
+3. Validates **newest → oldest** order using **Unix timestamps** parsed from each row’s `.age` `title` attribute (see below).
+4. Runs an **axe-core** accessibility audit (`@axe-core/playwright`) as a creative extension.
+5. Prints a **structured report** to the terminal (collection, sort result, a11y details, and a short summary including runtime).
+
+**Headless / presentation mode:** set `HEADLESS=1` (or `CI=1`) or run `npm run present` to run **without a visible window** so automation does not steal focus from your IDE or slides. Omit that for a normal headed run (e.g. Loom walkthrough).
+
+**Browsers after clone:** `npm install` runs a **postinstall** step that runs `playwright install chromium` so the bundled browser matches your Playwright version. If installs used `--ignore-scripts`, run `npm run install:browsers` once.
+
+### Why unix timestamps for sort validation
+
+The `.age` span on each HN row has a `title` attribute with a human-readable datetime and a **Unix timestamp** (space-separated). Timestamps are plain numbers — **larger means more recent** — so pairwise checks are simple and reliable without parsing dates.
+
+### Why accessibility as the creative extension
+Accessibility shouldn't be an afterthought. QA isn't just functional testing — it's making sure real users can actually use the product. I used axe-core because it's the industry standard for accessibility testing and integrates natively with Playwright.
+
+- **`playwright`** — required by the assignment; drives the browser and installs matching Chromium via **postinstall** / `npm run install:browsers`.
+- **`@axe-core/playwright`** — accessibility audit engine (creative extension).
