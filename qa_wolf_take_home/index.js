@@ -114,6 +114,12 @@ async function sortHackerNewsArticles() {
       console.log(`  [${v.impact}] ${v.id} — ${v.nodes.length} element(s)`);
       console.log(`    ${v.description}\n`);
     }
+    console.log('─────────────────────────────────────────────');
+  console.log('  SUMMARY');
+  console.log(`  Articles checked:  ${articles.length}`);
+  console.log(`  Sort order:        ${failures.length === 0 ? 'PASS ✓' : 'FAIL ✗'}`);
+  console.log(`  A11y violations:   ${violations.length}`);
+  console.log('─────────────────────────────────────────────\n');
   }
 
   await browser.close();
